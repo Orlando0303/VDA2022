@@ -1,6 +1,6 @@
 ---
 title: "Data Analysis and Visualization - Assignment 1"
-author: "Xie Jiaxin, 2020111142"
+author: "Orlando"
 output:
   html_document:
     df_print: paged
