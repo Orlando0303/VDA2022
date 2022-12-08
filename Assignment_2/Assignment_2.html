@@ -12,7 +12,7 @@
 <meta name="author" content="Xie Jiaxin, 2020111142" />
 
 
-<title>Data Analysis and Visualization - Assignment 1</title>
+<title>Data Analysis and Visualization - Assignment 2</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1634,7 +1634,7 @@ pre code {
 
 
 <h1 class="title toc-ignore">Data Analysis and Visualization -
-Assignment 1</h1>
+Assignment 2</h1>
 <h4 class="author">Xie Jiaxin, 2020111142</h4>
 
 </div>
@@ -1796,6 +1796,7 @@ margin平均值最⾼的前3个region。这个名单随着年份变化⽽变化�
 {"columns":[{"label":["year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["region"],"name":[2],"type":["chr"],"align":["left"]},{"label":["mean"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"2015","2":"East coast","3":"0.3756862"},{"1":"2015","2":"International","3":"0.3736835"},{"1":"2015","2":"Northeast","3":"0.3677945"},{"1":"2016","2":"South","3":"0.3700733"},{"1":"2016","2":"International","3":"0.3691027"},{"1":"2016","2":"East coast","3":"0.3651756"},{"1":"2017","2":"International","3":"0.3700407"},{"1":"2017","2":"East coast","3":"0.3636274"},{"1":"2017","2":"South","3":"0.3628102"},{"1":"2018","2":"Northwest","3":"0.3760820"},{"1":"2018","2":"East coast","3":"0.3710904"},{"1":"2018","2":"West","3":"0.3662293"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<p>变化不大，East coast每年都在。</p>
 <p>（9）每年中，最赚钱的collection 前3名分别是什么︖</p>
 <pre class="r"><code>data %&gt;%
   distinct(collection)</code></pre>
@@ -1806,12 +1807,12 @@ margin平均值最⾼的前3个region。这个名单随着年份变化⽽变化�
 </div>
 <pre class="r"><code>data %&gt;%
   group_by(year, collection) %&gt;%
-  summarise(mean = mean(`contribution margin`),.groups = &quot;drop_last&quot;) %&gt;%
-  arrange(year,desc(mean)) %&gt;%
-  top_n(mean,n=3)</code></pre>
+  summarise(sum = sum(`sales revenue`),.groups = &quot;drop_last&quot;) %&gt;%
+  arrange(year,desc(sum)) %&gt;%
+  top_n(sum,n=3)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["collection"],"name":[2],"type":["chr"],"align":["left"]},{"label":["mean"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"2015","2":"Key West","3":"0.4248609"},{"1":"2015","2":"Hudson","3":"0.4188887"},{"1":"2015","2":"Mirada","3":"0.4158445"},{"1":"2016","2":"Hudson","3":"0.4259836"},{"1":"2016","2":"Key West","3":"0.4248609"},{"1":"2016","2":"Key Largo","3":"0.4198763"},{"1":"2017","2":"Key West","3":"0.4248609"},{"1":"2017","2":"Symphony","3":"0.4226463"},{"1":"2017","2":"Hudson","3":"0.4210321"},{"1":"2018","2":"Key West","3":"0.4248609"},{"1":"2018","2":"Hudson","3":"0.4198586"},{"1":"2018","2":"Odessa","3":"0.4184965"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["collection"],"name":[2],"type":["chr"],"align":["left"]},{"label":["sum"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"2015","2":"Bremen","3":"5864801"},{"1":"2015","2":"Belcastel","3":"4864941"},{"1":"2015","2":"Rae","3":"4558754"},{"1":"2016","2":"Belcastel","3":"7248020"},{"1":"2016","2":"Bremen","3":"5822016"},{"1":"2016","2":"Milan","3":"5125564"},{"1":"2017","2":"Belcastel","3":"6900921"},{"1":"2017","2":"Rae","3":"6649162"},{"1":"2017","2":"Milan","3":"6471567"},{"1":"2018","2":"Belcastel","3":"10331671"},{"1":"2018","2":"Bremen","3":"8843052"},{"1":"2018","2":"Rae","3":"7440246"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>（10）2018 年中，每个brand 最赚钱的collection 是什么︖</p>
@@ -1825,11 +1826,11 @@ margin平均值最⾼的前3个region。这个名单随着年份变化⽽变化�
 <pre class="r"><code>data %&gt;%
   filter(year == 2018) %&gt;%
   group_by(brand,collection) %&gt;%
-  summarise(mean = mean(`contribution margin`),.groups = &quot;drop_last&quot;) %&gt;%
-  top_n(mean,n=1)</code></pre>
+  summarise(sum = sum(`sales revenue`),.groups = &quot;drop_last&quot;) %&gt;%
+  top_n(sum,n=1)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["brand"],"name":[1],"type":["chr"],"align":["left"]},{"label":["collection"],"name":[2],"type":["chr"],"align":["left"]},{"label":["mean"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"Elements","2":"Strickland","3":"0.3692716"},{"1":"Jeffrey Alexander","2":"Key West","3":"0.4248609"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["brand"],"name":[1],"type":["chr"],"align":["left"]},{"label":["collection"],"name":[2],"type":["chr"],"align":["left"]},{"label":["sum"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"Elements","2":"Madison","3":"7186918"},{"1":"Jeffrey Alexander","2":"Belcastel","3":"10331671"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 

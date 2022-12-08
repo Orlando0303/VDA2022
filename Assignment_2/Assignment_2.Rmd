@@ -2,9 +2,9 @@
 title: "Data Analysis and Visualization - Assignment 2"
 author: "Xie Jiaxin, 2020111142"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 利⽤tidyverse 的框架，基于数据dataset-cac-ma.xlsx 进⾏如下内容
 （1）将数据读入R，并保存成tibble 类型的数据。展⽰该数据框的前6 ⾏。
