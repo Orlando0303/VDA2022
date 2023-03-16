@@ -1,0 +1,227 @@
+---
+title: "2020111142_谢嘉薪_Ass3"
+author: "Xie Jiaxin, 2020111142"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+1.  利⽤你的学号，⽣成⼀个1000\*p 的矩阵X，如下所⽰。
+
+```{r, include=T, echo=T}
+studno <- 2020111142 
+set.seed(studno)
+n <- 1000
+p <- 10
+beta0 <- 1
+beta <- c(c(1,2,3,4,5), rep(0, p-5))
+X <- matrix(rnorm(n*p, 0, 1), nrow=n, ncol=p)
+e <- rnorm(n, 0, 0.2)
+Y <- beta0 + X %*% beta + e
+dat <- data.frame(Y,X)
+colnames(dat) <- c("Y", paste("X", 1:p, sep=""))
+```
+
+（a）请描述⽬前⽣成的响应变量中，有⽤的⾃变量是哪些。
+
+```{r, include=T, echo=T}
+beta
+```
+
+A：有用的自变量为X1,X2,X3,X4,X5，它们的系数不为零。
+
+（b）请⽤AIC估计Y～X的线性回归中，依次估计出来的系数非零的变量分别是哪些。
+
+```{r, include=T, echo=T}
+m.null <-lm(Y~1,data=dat)
+m.full <-lm(Y~.,data=dat)
+m<-step(m.null,scope = list(upper = m.full), direction = "forward",trace = 1)
+summary(m)
+```
+
+系数非零的变量依次为X5、X4、X3、X2、X1、X10、X7
+
+（c）请⽤lasso 和ridge，依次估计出来的系数非零的变量分别是哪些，绘制solution path
+
+```{r, include=T, echo=T}
+library(ISLR)
+library(lmtest)
+library(glmnet)
+
+lasso.mod=glmnet(X,Y,alpha=1)
+plot(lasso.mod,label=T,xvar="lambda")
+coef(lasso.mod)
+
+ridge.mod=glmnet(X,Y,alpha=0)
+plot(ridge.mod,label=T,xvar="lambda")
+coef(ridge.mod)
+```
+
+lasso:x1 x2 x3 x4 x5
+
+ridge:x1 x2 x3 x4 x5 x6 x7 x8 x9 x10
+
+（d）设定p为100重复（b）-（c），结果有什么变化︖
+
+```{r, include=T, echo=T}
+studno <- 2020111142 
+set.seed(studno)
+n <- 1000
+p <- 100
+beta0 <- 1
+beta <- c(c(1,2,3,4,5), rep(0, p-5))
+X <- matrix(rnorm(n*p, 0, 1), nrow=n, ncol=p)
+e <- rnorm(n, 0, 0.2)
+Y <- beta0 + X %*% beta + e
+dat <- data.frame(Y,X)
+colnames(dat) <- c("Y", paste("X", 1:p, sep=""))
+
+m.null <-lm(Y~1,data=dat)
+m.full <-lm(Y~.,data=dat)
+m<-step(m.null,scope = list(upper = m.full), direction = "forward",trace = 1)
+#summary(m)
+
+lasso.mod=glmnet(X,Y,alpha=1)
+plot(lasso.mod,label=T,xvar="lambda")
+#coef(lasso.mod)
+
+ridge.mod=glmnet(X,Y,alpha=0)
+plot(ridge.mod,label=T,xvar="lambda")
+#coef(ridge.mod)
+```
+
+AIC：加入了更多变量
+
+lasso：仍是x1 x2 x3 x4 x5
+
+ridge：所有变量系数都不为零
+
+2.  请基于wineTrain 数据集，进⾏主成分分析。
+
+```{r, include=T, echo=T}
+library(ggplot2)
+library(gridExtra) ##支持ggplot2多图并列
+library(corrplot)
+#install.packages("rattle")
+library(rattle)
+library(factoextra) # clustering algorithms & visualization
+library(tidyverse)  # data manipulation
+library(cluster) 
+data("wine")
+dim(wine)
+set.seed(studno)
+wineTrain <- wine[, which(names(wine) != "Type")]
+head(wineTrain)
+```
+
+(a) 请计算wineTrain的主成分，并输出计算结果，你应该得到⼀个13\*13的得分矩阵。
+
+```{r, include=T, echo=T}
+sapply (wineTrain, class)
+wineTrain$Magnesium <- as.numeric(wineTrain$Magnesium)
+wineTrain$Proline <- as.numeric(wineTrain$Proline)
+wineTrain.pca <- prcomp(wineTrain,scale = T)
+dim(wineTrain.pca$rotation)
+wineTrain.pca$rotation
+```
+
+(b)通过合适的图表，将fviz_pca_ind(), fviz_pca_var() 和fviz_pca_var()进⾏展⽰。这三个图展⽰的分别是什么︖
+
+```{r, include=T, echo=T}
+fviz_pca_ind(wineTrain.pca,
+             col.ind="cos2", # Color by the quality of representation
+             gradient.cols=c("#00AFBB","#E7B800","#FC4E07"),
+             repel=TRUE # Avoid text overlapping
+             )
+fviz_pca_var(wineTrain.pca,
+             col.var="contrib", # Color by contributions to the PC
+             gradient.cols=c("#00AFBB","#E7B800","#FC4E07"),
+             repel=TRUE
+             )
+fviz_pca_biplot(wineTrain.pca,
+                col.ind = "#696969", # Variables color
+                col.var = "#2E9FDF" # Individuals color
+                )
+
+```
+
+fviz_pca_ind：代表了每一个案例（观测）在贡献率最大的两个主成分张开的空间上的情况
+
+fviz_pca_var：代表了每一个变量在贡献率最大的两个主成分张开的空间上的情况
+
+fviz_pca_biplot：代表了每一个变量以及每一个案例（观测）在贡献率最大的两个主成分张开的空间上的情况
+
+(c) 计算每个主成分对原始变量的解释程度，按照降序排列，并计算累计贡献率。你觉得选多少个主成分比较合适︖
+
+```{r, include=T, echo=T}
+# 方差贡献图
+fviz_eig(wineTrain.pca)
+
+# Eigenvalues
+eig.val <- get_eigenvalue(wineTrain.pca)
+print(eig.val)
+```
+选择5时，方差的累计贡献率超过了80%，因此选择5个主成分进行分析比较合适。
+
+(d) 展⽰原始变量到前m个主成分的变换矩阵，其中m为你在(c)中的主成分的个数。在前m个主成分上，原始的13个变量对每个主成分的影响有多少是正的影响，有多少是负影响︖请通过apply函数进⾏展⽰。
+
+```{r, include=T, echo=T}
+# 前5个主成分的变换矩阵
+wineTrain.pca$rotation[,1:5]
+
+# 正影响
+apply(wineTrain.pca$rotation[,1:5],2,FUN=function(x){sum(x>0)})
+
+# 负影响
+apply(wineTrain.pca$rotation[,1:5],2,FUN=function(x){sum(x<0)})
+```
+
+(e) 将你得到的m个主成分作为新的变量，基于这m个主成分进⾏k-means聚类，nstart=25.你认为k取多少比较合适︖与基于原始数据的k-means相比，k的值是否相同︖
+
+```{r, include=T, echo=T}
+set.seed(studno)
+new_var <- scale(wineTrain.pca$x[,1:5],center = T,scale = T)
+fviz_nbclust(scale(wineTrain),kmeans,method = "silhouette",nstart=25)
+fviz_nbclust(new_var,kmeans,method = "silhouette",nstart=25)
+```
+
+原始数据：3
+
+主成分数据：8
+
+(f) 基于m个主成分进⾏3-menas聚类，该模型得到的分组结果与原始变量Cultivar的标签吻合度如何︖
+
+```{r, include=T, echo=T}
+set.seed(studno)
+wineTrain.pca.km <- kmeans(new_var,centers = 3,nstart = 25)
+table(wineTrain.pca.km$cluster,wine$Type)
+# 变换
+cluster.new <- ifelse(wineTrain.pca.km$cluster==3,1,ifelse(wineTrain.pca.km$cluster==1,3,2))
+table(cluster.new,wine$Type)
+sum(cluster.new==wine$Type)/length(cluster.new)
+```
+原始混淆矩阵中三类的对应不是非常准确，因此选择进行变换，变换后发现分类效果有所提升。
+
+准确率为：0.9662921
+
+(g) 请通过任何⼀种你学过的分类⽅法，将wine 进⾏分类，其中Cultivar作为响应变量，前m 个主成分作为解释变量，得到每个样本点的分类的预测值。此时的预测效果怎么样︖与基于原始变量进⾏预测相比，此时的精准度如何︖基于此，你觉得基于主成分分析后再进⾏模型预测，是否可取︖
+```{r, include=T, echo=T}
+set.seed(studno)
+#install.packages("mclust")
+library(mclust)
+EM.pca <- Mclust(new_var,G = 3)
+fviz_cluster(EM.pca) # scatter plot
+table(EM.pca$classification,wine$Type)
+sum(EM.pca$classification==wine$Type)/length(EM.pca$classification)
+
+df <- scale(wineTrain)
+km <- kmeans(df, centers = 3, nstart = 25)
+table(km$cluster,wine$Type)
+cluster.new <- ifelse(km$cluster==1,2,ifelse(km$cluster==2,1,3))
+table(cluster.new,wine$Type)
+sum(cluster.new==wine$Type)/length(cluster.new)
+```
+三类重叠，效果较差。
+
+从混淆矩阵以及准确率中可以看出，EM算法此时的预测正确率较低，比较EM算法和kmeans算法在主成分分析后的准确率变换，可以发现主成分分析对数据的影响对于不同的算法影响不同，有可能提升算法的准确率，也有可能降低算法的准确率
